@@ -9,6 +9,7 @@ public class MonsterController : MonoBehaviour
 	public float stepTime;
 	public float stepLength;
 	public float gunRotationTime;
+	public float damage;
 
 	public GameObject gun;
 
@@ -20,6 +21,13 @@ public class MonsterController : MonoBehaviour
 		target = transform.position;
 	}
 
+	Vector3 drawTo;
+
+	void OnDrawGizmos()
+	{
+		Gizmos.color = Color.red;
+		Gizmos.DrawLine(gun.transform.position, drawTo);
+	}
 	void DoStep()
 	{
 		if (Input.GetKey (KeyCode.D))
@@ -34,6 +42,21 @@ public class MonsterController : MonoBehaviour
 				shakeParams["time"] = stepTime * 0.5f;
 				iTween.ShakeRotation(gameObject, shakeParams);
 
+				doingShake = true;
+			}
+		}
+		if (Input.GetKey (KeyCode.A))
+		{
+			target = transform.position - Vector3.right*stepLength;
+			
+			if(!doingShake)
+			{
+				Hashtable shakeParams = new Hashtable();
+				shakeParams["amount"] = new Vector3(0.0f, 0.0f, 2.0f);
+				shakeParams["oncomplete"]  = "OnShakeDone";
+				shakeParams["time"] = stepTime * 0.5f;
+				iTween.ShakeRotation(gameObject, shakeParams);
+				
 				doingShake = true;
 			}
 		}
@@ -60,10 +83,21 @@ public class MonsterController : MonoBehaviour
 		Vector3 dir = GetMouseWorld() - gun.transform.position;
 		dir.z = 0.0f;
 		dir.Normalize();
-		//Debug.LogError(dir);
-		//iTween.RotateUpdate(gun, Quaternion.LookRotation(dir).eulerAngles, gunRotationTime);
-
 		gun.transform.up = -dir;
+	
+		if(Input.GetMouseButton(0))
+		{
+			RaycastHit hit;
+			if(Physics.Raycast(new Ray(gun.transform.position, dir), out hit))
+			{
+				drawTo = hit.point;
+				EnemyBehaviour enemyBeh = hit.collider.gameObject.GetComponent<EnemyBehaviour>();
+				if(enemyBeh != null)
+				{
+					enemyBeh.OnGettingHit(damage);
+				}
+			}
+		}
 	}
 
 	void OnStepDone()
