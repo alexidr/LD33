@@ -25,12 +25,14 @@ ModelImporter:
     2300006: monsta_body
     2300008: monsta_gun
     2300010: monsta_leg
+    2300012: //RootNode
     3300000: monsta_body001
     3300002: monsta_gun001
     3300004: monsta_leg001
     3300006: monsta_body
     3300008: monsta_gun
     3300010: monsta_leg
+    3300012: //RootNode
     4300000: monsta_leg001
     4300002: monsta_gun001
     4300004: monsta_body001
