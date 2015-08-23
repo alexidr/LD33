@@ -6,11 +6,16 @@ ModelImporter:
   serializedVersion: 18
   fileIDToRecycleName:
     100000: //RootNode
+    100002: laser_green
     400000: //RootNode
+    400002: laser_green
     2300000: //RootNode
+    2300002: laser_green
     3300000: //RootNode
+    3300002: laser_green
     4300000: Plane010
     4300002: laser_red
+    4300004: laser_green
     9500000: //RootNode
   materials:
     importMaterials: 1
