@@ -1,55 +1,15 @@
 fileFormatVersion: 2
-guid: 55c6cd9b803894b2f9d5ff8fba035643
-timeCreated: 1440318482
-licenseType: Pro
+guid: 01634af5d4ab7423da2b5f6ca28716cb
+timeCreated: 1440330068
+licenseType: Free
 ModelImporter:
   serializedVersion: 18
   fileIDToRecycleName:
     100000: //RootNode
-    100002: monsta_body001
-    100004: monsta_gun001
-    100006: monsta_leg001
-    100008: monsta_body
-    100010: monsta_gun
-    100012: monsta_leg
-    100014: monster_eye
-    100016: monster_leg
     400000: //RootNode
-    400002: monsta_body001
-    400004: monsta_gun001
-    400006: monsta_leg001
-    400008: monsta_body
-    400010: monsta_gun
-    400012: monsta_leg
-    400014: monster_eye
-    400016: monster_leg
-    2300000: monsta_body001
-    2300002: monsta_gun001
-    2300004: monsta_leg001
-    2300006: monsta_body
-    2300008: monsta_gun
-    2300010: monsta_leg
-    2300012: //RootNode
-    2300014: monster_eye
-    2300016: monster_leg
-    3300000: monsta_body001
-    3300002: monsta_gun001
-    3300004: monsta_leg001
-    3300006: monsta_body
-    3300008: monsta_gun
-    3300010: monsta_leg
-    3300012: //RootNode
-    3300014: monster_eye
-    3300016: monster_leg
-    4300000: monsta_leg001
-    4300002: monsta_gun001
-    4300004: monsta_body001
-    4300006: monsta_body
-    4300008: monsta_leg
-    4300010: monsta_gun
-    4300012: monster_body
-    4300014: monster_leg
-    4300016: monster_eye
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: Plane010
     9500000: //RootNode
   materials:
     importMaterials: 1
