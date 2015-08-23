@@ -14,6 +14,10 @@ ModelImporter:
     100012: monsta_leg
     100014: monster_eye
     100016: monster_leg
+    100018: body_glow_green
+    100020: body_glow_red
+    100022: eye_glow_green
+    100024: eye_glow_red
     400000: //RootNode
     400002: monsta_body001
     400004: monsta_gun001
@@ -23,6 +27,10 @@ ModelImporter:
     400012: monsta_leg
     400014: monster_eye
     400016: monster_leg
+    400018: body_glow_green
+    400020: body_glow_red
+    400022: eye_glow_green
+    400024: eye_glow_red
     2300000: monsta_body001
     2300002: monsta_gun001
     2300004: monsta_leg001
@@ -32,6 +40,10 @@ ModelImporter:
     2300012: //RootNode
     2300014: monster_eye
     2300016: monster_leg
+    2300018: body_glow_green
+    2300020: body_glow_red
+    2300022: eye_glow_green
+    2300024: eye_glow_red
     3300000: monsta_body001
     3300002: monsta_gun001
     3300004: monsta_leg001
@@ -41,6 +53,10 @@ ModelImporter:
     3300012: //RootNode
     3300014: monster_eye
     3300016: monster_leg
+    3300018: body_glow_green
+    3300020: body_glow_red
+    3300022: eye_glow_green
+    3300024: eye_glow_red
     4300000: monsta_leg001
     4300002: monsta_gun001
     4300004: monsta_body001
@@ -50,6 +66,10 @@ ModelImporter:
     4300012: monster_body
     4300014: monster_leg
     4300016: monster_eye
+    4300018: eye_glow_red
+    4300020: body_glow_red
+    4300022: eye_glow_green
+    4300024: body_glow_green
     9500000: //RootNode
   materials:
     importMaterials: 1
