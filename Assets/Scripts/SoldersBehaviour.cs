@@ -1,22 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EnemyBehaviour : MonoBehaviour 
+public class SoldersBehaviour : EnemyBehaviour 
 {
-	[HideInInspector]
-	public GameObject targetObject;
-
 	public float attackDistance;
-	public float movingSpeed;
 	public float flipDistance = 5.0f;
-	public float health = 100.0f;
-	
-	bool playingDeath = false;
 
-	// Use this for initialization
+	public float damage;
+
+	public Transform firePoint;
+	public GameObject bullet;
+	public float shootFrequency = 1.0f;
+
+	bool playingDeath = false;
+	float nextShootTime;
+    
+    // Use this for initialization
 	void Start () 
 	{
-	
+		//iTween.RotateTo(gameObject, new iTween. new Vector3(0.0f, 0.0f, 90.0f), 100000.0f);
+		nextShootTime = 0.0f;
 	}
 
 	void Fight()
@@ -31,12 +34,19 @@ public class EnemyBehaviour : MonoBehaviour
 		if(dist > attackDistance)
 		{
 			transform.position = transform.position + direction*movingSpeed*Time.deltaTime;
+			nextShootTime = Time.time + 1.0f / shootFrequency;
 		}
-		
-		bool needFlip = (direction.x > 0.0f && transform.right.x < 0.0f) || (direction.x < 0.0f && transform.right.x > 0.0f);
+		else if(Time.time > nextShootTime && bullet != null)
+		{
+			nextShootTime = Time.time + 1.0f / shootFrequency;
+
+			Instantiate(bullet, firePoint.position, firePoint.rotation);
+		}
+
+		bool needFlip = (direction.x > 0.0f && transform.right.x > 0.0f) || (direction.x < 0.0f && transform.right.x < 0.0f);
 		
 		if(dist > flipDistance && needFlip)
-			transform.right = direction.x > 0.0f ? Vector3.right : Vector3.left;
+			transform.right = direction.x > 0.0f ? Vector3.left : Vector3.right;
 	}
 
 	void Death()
@@ -58,12 +68,12 @@ public class EnemyBehaviour : MonoBehaviour
 			Fight();
 	}
 
-	public void OnGettingHit(float damage)
+	virtual public void OnGettingHit(float damage)
 	{
 		health -= damage*Time.deltaTime;
 	}
 
-	public void PlayDeath()
+	override public void PlayDeath()
 	{
 		playingDeath = true;
 		Death();
