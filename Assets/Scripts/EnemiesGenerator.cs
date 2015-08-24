@@ -99,7 +99,7 @@ public class EnemiesGenerator : MonoBehaviour {
 			spawnedEnemy.transform.position = startPos;
 
 	
-			EnemyBehaviour eb = spawnedEnemy.GetComponent<EnemyBehaviour>();
+			EnemyBehaviour eb = spawnedEnemy.GetComponentInChildren<EnemyBehaviour>();
 			eb.targetObject = monster;
 			eb.attackDistance = GetAttackDistance(spawnedEnemy);
 			eb.fallHeight = fallHeight;

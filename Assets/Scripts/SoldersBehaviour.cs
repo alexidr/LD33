@@ -119,6 +119,8 @@ public class SoldersBehaviour : EnemyBehaviour
 
 	void Death()
 	{
+		MonsterController.AddPoints(points);
+
 		destoyTime = Time.time + burningTime;
 
 		Destroy(GetComponent<iTween>());

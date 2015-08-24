@@ -67,6 +67,7 @@ public class CowBehaviour : EnemyBehaviour
 	override public void PlayDeath()
 	{
 		MonsterController.Heal(heal);
+		MonsterController.AddPoints(points);
 
 		state = State.Cought;
 		iTween.MoveTo(gameObject, iTween.Hash("position", MonsterController.MouthPosition(), 

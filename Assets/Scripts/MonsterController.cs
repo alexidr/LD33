@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class MonsterController : MonoBehaviour 
 {
@@ -38,10 +39,14 @@ public class MonsterController : MonoBehaviour
 	public GameObject gun;
 	public float scrollSpeed;
 
-	public GameObject laserEffectPrefab;
+	public GameObject redLaserEffectPrefab;
+	public GameObject greenLaserEffectPrefab;
 
 	public RectTransform healthUI;
 	public GameObject finishUI;
+	public Text pointsText;
+
+	public int points = 0;
 
 	float initialHealthLength;
 
@@ -64,7 +69,8 @@ public class MonsterController : MonoBehaviour
 	KeyCode expectedKey = KeyCode.None;
 	float expectedTime;
 
-	GameObject laserEffect;
+	GameObject redLaserEffect;
+	GameObject greenLaserEffect;
 	bool dead = false;
 
 	static MonsterController This;
@@ -102,6 +108,7 @@ public class MonsterController : MonoBehaviour
 	void UpdateUI()
 	{
 		healthUI.sizeDelta = new Vector2(initialHealthLength * currentHealth / health, healthUI.sizeDelta.y);
+		pointsText.text = points.ToString();
 	}
 
 	public static void BroadcastAll(string fun) 
@@ -139,7 +146,8 @@ public class MonsterController : MonoBehaviour
 			redGlow.SetActive(false);
 			greenGlow.SetActive(false);
 
-			laserEffect.SetActive(false);
+			redLaserEffect.SetActive(false);
+			greenLaserEffect.SetActive(false);
 
 			Destroy(GetComponent<iTween>());
 			iTween.ShakePosition(gameObject, new Vector3(1.0f, 4.0f, 0.5f), 1.5f);
@@ -161,6 +169,12 @@ public class MonsterController : MonoBehaviour
 		This.DoDamageImpl(damage);
 	}
 
+	static public void AddPoints(int points)
+	{
+		This.points += points;
+		This.UpdateUI();
+	}
+
 	public void HealImpl(float heal)
 	{
 		if(dead) return;
@@ -178,6 +192,8 @@ public class MonsterController : MonoBehaviour
 	
 	void Start () 
 	{
+		pointsText.text = "0";
+
 		currentHealth = health;
 		initialHealthLength = healthUI.sizeDelta.x;
 
@@ -187,8 +203,11 @@ public class MonsterController : MonoBehaviour
 		redGlow.SetActive(false);
 		greenGlow.SetActive(false);
 
-		laserEffect = Instantiate(laserEffectPrefab);
-		laserEffect.SetActive(false);
+		redLaserEffect = Instantiate(redLaserEffectPrefab);
+		redLaserEffect.SetActive(false);
+
+		greenLaserEffect = Instantiate(greenLaserEffectPrefab);
+		greenLaserEffect.SetActive(false);
 	}
 
 	void Move()
@@ -429,11 +448,12 @@ public class MonsterController : MonoBehaviour
 			currentScroll += Time.deltaTime * scrollSpeed;
 			laser.transform.right = dir;
 
-			laserEffect.SetActive(true);
-			laserEffect.transform.position = hitPoint + Vector3.up*0.1f + Vector3.back*0.2f;
-
 			if(needRed)
 			{
+				redLaserEffect.SetActive(true);
+				greenLaserEffect.SetActive(false);
+				redLaserEffect.transform.position = hitPoint + Vector3.up*0.1f + Vector3.back*0.2f;
+
 				redGlow.SetActive(true);
 				greenGlow.SetActive(false);
 				redGlow.transform.GetChild(0).gameObject.SetActive(Random.value > 0.5f);
@@ -442,6 +462,10 @@ public class MonsterController : MonoBehaviour
 			}
 			else
 			{
+				greenLaserEffect.SetActive(true);
+				redLaserEffect.SetActive(false);
+				greenLaserEffect.transform.position = hitPoint + Vector3.up*0.1f + Vector3.back*0.2f;
+
 				greenGlow.SetActive(true);
 				redGlow.SetActive(false);
 				greenGlow.transform.GetChild(0).gameObject.SetActive(Random.value > 0.5f);
@@ -456,7 +480,8 @@ public class MonsterController : MonoBehaviour
 			if(laser != null)
 			{
 				Destroy(laser);
-				laserEffect.SetActive(false);
+				redLaserEffect.SetActive(false);
+				greenLaserEffect.SetActive(false);
 			}
 
 			redGlow.SetActive(false);
