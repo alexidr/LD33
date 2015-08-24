@@ -3,8 +3,6 @@ using System.Collections;
 
 public class CarBehaviour : EnemyBehaviour
 {
-	bool dead;
-
 	void Move()
 	{
 		transform.position = transform.position + Vector3.left*movingSpeed*Time.deltaTime;
@@ -18,6 +16,7 @@ public class CarBehaviour : EnemyBehaviour
 
 	override public void PlayDeath()
 	{
+		dead = true;
 		Destroy(gameObject);
     }
 }
