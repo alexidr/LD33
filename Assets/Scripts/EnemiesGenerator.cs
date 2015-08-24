@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class EnemiesGenerator : MonoBehaviour {
 
 	public GameObject monster;
+	public float distanceToDelete = 20.0f;
 	public float groundHeight;
 
 	public GameObject[] levelEnemies;
@@ -100,6 +101,15 @@ public class EnemiesGenerator : MonoBehaviour {
 			{
 				spawned.RemoveAt(i);
 				--i;
+				continue;
+			}
+
+			if((spawned[i].transform.position.x + distanceToDelete) < monster.transform.position.x)
+			{
+				ReleaseSlot(spawned[i].gameObject);
+				Destroy(spawned[i].gameObject);
+                spawned.RemoveAt(i);
+                --i;
 				continue;
 			}
 
