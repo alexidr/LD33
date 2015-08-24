@@ -13,6 +13,8 @@ public class SoldersBehaviour : EnemyBehaviour
 	public float damageShakeMinAngle = 5.0f;
 	public float damageShakeMaxAngle = 10.0f;
 
+	public float burningTime = 1.5f;
+
 	public float damage;
 
 	public Transform firePoint;
@@ -21,11 +23,14 @@ public class SoldersBehaviour : EnemyBehaviour
 	public bool explodeOnDeath = false;
 
 	bool playingDeath = false;
+	bool finished = false;
+
 	float nextShootTime;
 	bool moving = false;
 
 	float moveShakeRotationMult = 1.0f;
 	int fireShakeState = 0;
+	float destoyTime;
 	
     // Use this for initialization
 	void Start () 
@@ -114,23 +119,34 @@ public class SoldersBehaviour : EnemyBehaviour
 
 	void Death()
 	{
-		Destroy(GetComponent<iTween>());
+		destoyTime = Time.time + burningTime;
 
-		float rand = Random.value;
-		if(rand > 0.8f)
-			iTween.RotateTo(gameObject, new Vector3(90.0f, 0.0f, 0.0f), 0.5f);
-		else if(rand > 0.6f)
-			iTween.RotateTo(gameObject, new Vector3(-90.0f, 0.0f, 0.0f), 0.5f);
-		else if(rand > 0.4f)
-			iTween.RotateTo(gameObject, new Vector3(90.0f, gameObject.transform.rotation.eulerAngles.y, 0.0f), 0.5f);
-		else
-			iTween.RotateTo(gameObject, new Vector3(-90.0f, gameObject.transform.rotation.eulerAngles.y, 0.0f), 0.5f);
+		Destroy(GetComponent<iTween>());
+		iTween.ShakePosition(gameObject, new Vector3(0.6f, 1.0f, 0.5f), burningTime);
 	}
 
 	void Update () 
 	{
 		if(!playingDeath)
+		{
 			Fight();
+		}
+		else if(Time.time > destoyTime && !finished)
+		{
+			Destroy(GetComponent<iTween>());
+			
+			float rand = Random.value;
+			if(rand > 0.8f)
+				iTween.RotateTo(gameObject, new Vector3(90.0f, 0.0f, 0.0f), 0.5f);
+			else if(rand > 0.6f)
+				iTween.RotateTo(gameObject, new Vector3(-90.0f, 0.0f, 0.0f), 0.5f);
+			else if(rand > 0.4f)
+				iTween.RotateTo(gameObject, new Vector3(90.0f, gameObject.transform.rotation.eulerAngles.y, 0.0f), 0.5f);
+			else
+                iTween.RotateTo(gameObject, new Vector3(-90.0f, gameObject.transform.rotation.eulerAngles.y, 0.0f), 0.5f);
+
+			finished = true;
+		}
 	}
 	
 	override public void PlayDeath()
