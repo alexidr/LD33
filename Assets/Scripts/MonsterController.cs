@@ -5,6 +5,21 @@ public class MonsterController : MonoBehaviour
 {
 	bool doingShake = false;
 
+	public float shakeDelayMin;
+	public float shakeDelayMax;
+
+	public float shakeTimeMin;
+	public float shakeTimeMax;
+
+	public float shakeSpeed;
+	public float shakeAngleMin;
+	public float shakeAngleMax;
+
+	public float resetShakeTime;
+	float inputTime;
+
+	float shakeDelay;
+
 	public float stepTime;
 	public float stepLength;
 	public float eyeMinX;
@@ -20,12 +35,24 @@ public class MonsterController : MonoBehaviour
 	public GameObject gun;
 	public float scrollSpeed;
 
+	bool moveForward;
+	bool moveBackward;
+	bool wrongInput = false;
+
 	GameObject laser;
 	bool wasRed;
 
 	float laserInitialLength;
 	Vector3 target;
 	float currentScroll;
+
+	float moveShakeRotationMult = 1.0f;
+	bool shaking = false;
+	float shakingStopTime;
+	float nextShaking;
+
+	KeyCode expectedKey = KeyCode.None;
+	float expectedTime;
 
 	static MonsterController This;
 
@@ -77,12 +104,46 @@ public class MonsterController : MonoBehaviour
 		greenGlow.SetActive(false);
 	}
 
+	void Move()
+	{
+		if(Time.time > shakingStopTime)
+		{
+			iTween.RotateTo(gameObject, iTween.Hash("z", 0.0f, "time", 0.0f));
+        }
+		else
+		{
+			iTween.RotateTo(gameObject, iTween.Hash("z", Random.Range(shakeAngleMin, shakeAngleMax)*moveShakeRotationMult, "time", shakeSpeed, 
+			                                        "oncomplete", "Move"));
+			moveShakeRotationMult = -moveShakeRotationMult;
+		}
+    }
+
+	void ShakeReset()
+	{
+		target = transform.position;
+
+		Destroy(GetComponent<iTween>());
+		iTween.ShakePosition(gameObject, new Vector3(1.0f, 2.0f, 0.5f), resetShakeTime);
+	}
+
 	void DoStep()
 	{
-		if (Input.GetKey (KeyCode.D))
+		if(Time.time > nextShaking)
+			shaking = false;
+
+		if (moveForward)
 		{
 			target = transform.position + Vector3.right*stepLength;
 
+			if(!shaking)
+			{
+				shakingStopTime = Time.time + Random.Range(shakeTimeMin, shakeTimeMax);
+				shaking = true;
+
+				Move();
+				nextShaking = Time.time + Random.Range(shakeDelayMin, shakeDelayMax);
+			}
+			/*
 			if(!doingShake)
 			{
 				Hashtable shakeParams = new Hashtable();
@@ -93,11 +154,21 @@ public class MonsterController : MonoBehaviour
 
 				doingShake = true;
 			}
+			*/
 		}
-		if (Input.GetKey (KeyCode.A))
+		else if (moveBackward)
 		{
 			target = transform.position - Vector3.right*stepLength;
-			
+
+			if(!shaking)
+			{
+				shakingStopTime = Time.time + Random.Range(shakeTimeMin, shakeTimeMax);
+				shaking = true;
+				
+				Move();
+				nextShaking = Time.time + Random.Range(shakeDelayMin, shakeDelayMax);
+            }
+			/*
 			if(!doingShake)
 			{
 				Hashtable shakeParams = new Hashtable();
@@ -108,6 +179,7 @@ public class MonsterController : MonoBehaviour
 				
 				doingShake = true;
 			}
+*/
 		}
 
 		Hashtable moveParams = new Hashtable();
@@ -115,6 +187,8 @@ public class MonsterController : MonoBehaviour
 		moveParams["oncomplete"]  = "OnStepDone";
 		moveParams["time"] = stepTime;
 		iTween.MoveUpdate(gameObject, moveParams);
+
+		moveForward = false;
     }
 
 	Vector3 GetMouseWorld()
@@ -126,9 +200,90 @@ public class MonsterController : MonoBehaviour
     // Update is called once per frame
 	void Update () 
 	{
-		DoStep();
+		bool expected = false;
 
-		Vector3 hitTarget = GetMouseWorld();
+		if(Time.time > inputTime)
+		{
+			if(Input.GetKeyDown(KeyCode.A))
+			{
+				expectedTime = Time.time + 0.3f;
+
+				expected = true;
+				if(expectedKey == KeyCode.None)
+				{
+					expectedKey = KeyCode.S;
+					moveForward = true;
+					moveBackward = false;
+				}
+				else if(expectedKey != KeyCode.A)
+				{
+					wrongInput = true;
+					moveForward = false;
+					moveBackward = false;
+					expectedKey = KeyCode.None;
+				}
+			}
+			if(Input.GetKeyDown(KeyCode.D))
+			{
+				expectedTime = Time.time + 0.3f;
+				
+				expected = true;
+				if(expectedKey != KeyCode.D)
+				{
+					wrongInput = true;
+					moveForward = false;
+					moveBackward = false;
+					expectedKey = KeyCode.None;
+				}
+                else
+                {
+                    expectedKey = KeyCode.None;
+                    // if(moveBackward) expectedKey = KeyCode.A;
+                }
+            }
+            if(Input.GetKeyDown(KeyCode.S))
+            {
+				expectedTime = Time.time + 0.3f;
+	            
+				expected = true;
+				if(expectedKey != KeyCode.S)
+				{
+					wrongInput = true;
+					moveForward = false;
+					moveBackward = false;
+					expectedKey = KeyCode.None;
+	            }
+				else
+				{
+					expectedKey = KeyCode.D;
+					//if(moveBackward) expectedKey = KeyCode.A;
+				}
+	        }
+		}
+        
+		if(!expected && expectedKey != KeyCode.None)
+        {
+            if(Input.anyKeyDown || Time.time > expectedTime)
+			{
+				wrongInput = true;
+				moveForward = false;
+                moveBackward = false;
+				expectedKey = KeyCode.None;
+	        }
+		}
+
+		if(wrongInput)
+		{
+			inputTime = Time.time + resetShakeTime;
+			ShakeReset();
+			wrongInput = false;
+		}
+		else
+		{
+			DoStep();
+		}
+        
+        Vector3 hitTarget = GetMouseWorld();
 		RaycastHit hit;
 		if(Physics.Raycast(new Ray(Camera.main.transform.position, (GetMouseWorld() - Camera.main.transform.position).normalized), out hit))
 		{
