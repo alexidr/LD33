@@ -3,9 +3,36 @@ using System.Collections;
 
 public class CarBehaviour : EnemyBehaviour
 {
+	public float shakeTime = 0.15f;
+	public float shakeMinAngle = 5.0f;
+	public float shakeMaxAngle = 10.0f;
+
+	float moveShakeRotationMult = 1.0f;
+
+	void ShakeMove()
+	{
+		if(dead)
+			return;
+
+		iTween.RotateTo(gameObject, iTween.Hash("z", Random.Range(shakeMinAngle, shakeMaxAngle)*moveShakeRotationMult, "time", shakeTime, 
+		                                        "oncomplete", "ShakeMove"));
+		moveShakeRotationMult = -moveShakeRotationMult;
+	}
+
+	void StopMove()
+	{
+		Destroy(GetComponent<iTween>());
+		iTween.RotateTo(gameObject, iTween.Hash("z", 0.0f, "time", 0.0f));
+	}
+
 	void Move()
 	{
 		transform.position = transform.position + Vector3.left*movingSpeed*Time.deltaTime;
+	}
+
+	void Start()
+	{
+		ShakeMove();
 	}
 
 	void Update () 
