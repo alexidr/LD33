@@ -156,6 +156,7 @@ public class MonsterController : MonoBehaviour
 			laser.transform.right = dir;
 
 			redGlow.SetActive(true);
+			redGlow.transform.GetChild(0).gameObject.SetActive(Random.value > 0.5f);
 		}
 		if(Input.GetMouseButtonUp(0))
 		{
