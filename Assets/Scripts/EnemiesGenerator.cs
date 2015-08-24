@@ -11,6 +11,7 @@ public class EnemiesGenerator : MonoBehaviour {
 	public int maxSpawnedUnits;
 
 	public float spawnDistance;
+	public float minZOffset;
 	public float maxZOffset;
 
 	public float attackDistanceMin;
@@ -78,7 +79,7 @@ public class EnemiesGenerator : MonoBehaviour {
 			GameObject spawnedEnemy = Instantiate(enemy);
 			Vector3 startPos = monster.transform.position + 
 				Vector3.right * spawnDistance + 
-				Vector3.forward*Random.Range(-maxZOffset,maxZOffset) +
+				Vector3.forward*Random.Range(minZOffset,maxZOffset) +
 				Vector3.up*0.1f;
 
 			startPos.y = groundHeight;
