@@ -25,7 +25,7 @@ public class Bullet : MonoBehaviour
 		MonsterController mc = MonsterController.FindMonster(other.gameObject);
 		if(mc != null)
 		{
-			mc.DoDamage(damage);
+			MonsterController.DoDamage(damage);
 		}
 
 		Destroy(gameObject);

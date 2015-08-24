@@ -3,8 +3,10 @@ using System.Collections;
 
 public class EnemyBehaviour : MonoBehaviour 
 {
+	public bool redLaser = true;
 	public float movingSpeed = 5.0f;
 	public float health = 100.0f;
+	public float attackDistance;
 
 	[HideInInspector]
 	public GameObject targetObject;
