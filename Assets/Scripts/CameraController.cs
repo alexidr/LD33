@@ -9,7 +9,8 @@ public class CameraController : MonoBehaviour {
 	Vector3 initialPos;
 	Vector3 initialOffset;
 	// Use this for initialization
-	void Start () {
+	void Start () 
+	{
 	
 		initialPos = transform.position;
 		initialOffset = follow.transform.position - initialPos;

@@ -17,6 +17,17 @@ public class CarBehaviour : EnemyBehaviour
 	override public void PlayDeath()
 	{
 		dead = true;
-		Destroy(gameObject);
+
+		Destroy(GetComponent<iTween>());
+		
+		float rand = Random.value;
+		if(rand > 0.8f)
+			iTween.RotateTo(gameObject, new Vector3(90.0f, 0.0f, 0.0f), 0.3f);
+		else if(rand > 0.6f)
+			iTween.RotateTo(gameObject, new Vector3(-90.0f, 0.0f, 0.0f), 0.3f);
+		else if(rand > 0.4f)
+			iTween.RotateTo(gameObject, new Vector3(90.0f, gameObject.transform.rotation.eulerAngles.y, 0.0f), 0.3f);
+		else
+			iTween.RotateTo(gameObject, new Vector3(-90.0f, gameObject.transform.rotation.eulerAngles.y, 0.0f), 0.3f);
     }
 }

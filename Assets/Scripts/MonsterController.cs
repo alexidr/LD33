@@ -5,6 +5,9 @@ public class MonsterController : MonoBehaviour
 {
 	bool doingShake = false;
 
+	public float health = 500.0f;
+	float currentHealth;
+
 	public float shakeDelayMin;
 	public float shakeDelayMax;
 
@@ -37,6 +40,11 @@ public class MonsterController : MonoBehaviour
 
 	public GameObject laserEffectPrefab;
 
+	public RectTransform healthUI;
+	public GameObject finishUI;
+
+	float initialHealthLength;
+
 	bool moveForward;
 	bool moveBackward;
 	bool wrongInput = false;
@@ -57,6 +65,7 @@ public class MonsterController : MonoBehaviour
 	float expectedTime;
 
 	GameObject laserEffect;
+	bool dead = false;
 
 	static MonsterController This;
 
@@ -90,17 +99,88 @@ public class MonsterController : MonoBehaviour
 		return health;
 	}
 
+	void UpdateUI()
+	{
+		healthUI.sizeDelta = new Vector2(initialHealthLength * currentHealth / health, healthUI.sizeDelta.y);
+	}
+
+	public static void BroadcastAll(string fun) 
+	{
+		GameObject[] gos = (GameObject[])GameObject.FindObjectsOfType(typeof(GameObject));
+		foreach (GameObject go in gos) {
+			if (go && go.transform.parent == null) {
+				go.gameObject.BroadcastMessage(fun, SendMessageOptions.DontRequireReceiver);
+            }
+        }
+    }
+
+	static IEnumerator ShowFinishUI(float waitTime, MonsterController mc)
+	{
+		yield return new WaitForSeconds(waitTime);
+		mc.finishUI.SetActive(true);
+	}
+    
+    public void DoDamageImpl(float damage)
+	{
+		if(dead) return;
+
+		currentHealth -= damage;
+		if(currentHealth < 0.0f) currentHealth = 0.0f;
+
+		UpdateUI();
+
+		if(currentHealth <= 0.0f)
+        {
+			dead = true;
+
+           if(laser != null)
+				Destroy(laser);
+
+			redGlow.SetActive(false);
+			greenGlow.SetActive(false);
+
+			laserEffect.SetActive(false);
+
+			Destroy(GetComponent<iTween>());
+			iTween.ShakePosition(gameObject, new Vector3(2.0f, 4.0f, 0.5f), 1.5f);
+            iTween.MoveTo(gameObject, iTween.Hash("position", transform.position + Vector3.up * 100.0f,
+			                                      "delay", 1.5f,
+			                                      "time", 2.0f));
+
+			StartCoroutine(ShowFinishUI(3.0f, this));
+			BroadcastAll("OnGameOver");
+		}
+	}
+
+	public void Restart()
+	{
+		Application.LoadLevel(0);
+	}
 	static public void DoDamage(float damage)
 	{
-
+		This.DoDamageImpl(damage);
 	}
+
+	public void HealImpl(float heal)
+	{
+		if(dead) return;
+	
+		currentHealth += heal;
+		currentHealth = Mathf.Clamp(currentHealth, currentHealth, health);
+
+		UpdateUI();
+	}
+
 	static public void Heal(float heal)
 	{
+		This.HealImpl(heal);
 	}
-
-	// Use this for initialization
+	
 	void Start () 
 	{
+		currentHealth = health;
+		initialHealthLength = healthUI.sizeDelta.x;
+
 		This = this;
 		target = transform.position;
 
@@ -208,6 +288,9 @@ public class MonsterController : MonoBehaviour
     // Update is called once per frame
 	void Update () 
 	{
+		if(dead)
+			return;
+
 		bool expected = false;
 
 		if(Time.time > inputTime)

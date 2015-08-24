@@ -137,13 +137,17 @@ public class SoldersBehaviour : EnemyBehaviour
 			
 			float rand = Random.value;
 			if(rand > 0.8f)
-				iTween.RotateTo(gameObject, new Vector3(90.0f, 0.0f, 0.0f), 0.5f);
+				iTween.RotateTo(gameObject, new Vector3(90.0f, 0.0f, 0.0f), 0.3f);
 			else if(rand > 0.6f)
-				iTween.RotateTo(gameObject, new Vector3(-90.0f, 0.0f, 0.0f), 0.5f);
+				iTween.RotateTo(gameObject, new Vector3(-90.0f, 0.0f, 0.0f), 0.3f);
 			else if(rand > 0.4f)
-				iTween.RotateTo(gameObject, new Vector3(90.0f, gameObject.transform.rotation.eulerAngles.y, 0.0f), 0.5f);
+				iTween.RotateTo(gameObject, new Vector3(90.0f, gameObject.transform.rotation.eulerAngles.y, 0.0f), 0.3f);
 			else
-                iTween.RotateTo(gameObject, new Vector3(-90.0f, gameObject.transform.rotation.eulerAngles.y, 0.0f), 0.5f);
+                iTween.RotateTo(gameObject, new Vector3(-90.0f, gameObject.transform.rotation.eulerAngles.y, 0.0f), 0.3f);
+
+			Vector3 pos = transform.position;
+			pos.y = fallHeight;
+			iTween.MoveTo(gameObject, pos, 0.3f);
 
 			finished = true;
 		}
@@ -154,7 +158,7 @@ public class SoldersBehaviour : EnemyBehaviour
 		playingDeath = true;
 		Death();
 
-		if(explodeOnDeath)
-			Destroy(gameObject);
+		//if(explodeOnDeath)
+		//	Destroy(gameObject);
 	}
 }

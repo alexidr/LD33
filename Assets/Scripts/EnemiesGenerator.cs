@@ -7,6 +7,7 @@ public class EnemiesGenerator : MonoBehaviour {
 	public GameObject monster;
 	public float distanceToDelete = 20.0f;
 	public float groundHeight;
+	public float fallHeight;
 
 	public GameObject[] levelEnemies;
 	public int maxSpawnedUnits;
@@ -21,7 +22,7 @@ public class EnemiesGenerator : MonoBehaviour {
 
 	public float minSpawnTime;
 	public float maxSpawnTime;
-
+	
 	float nextSpawnTime;
 	List<EnemyBehaviour> spawned = new List<EnemyBehaviour>();
 	GameObject [] slots;
@@ -65,6 +66,16 @@ public class EnemiesGenerator : MonoBehaviour {
 		int slotsCount = (int)((attackDistanceMax - attackDistanceMin) / unitSize);
 		slots = new GameObject[slotsCount];
 	}
+
+	void OnGameOver()
+	{
+		foreach(EnemyBehaviour en in spawned)
+		{
+			en.PlayDeath();
+		}
+
+		enabled = false;
+	}
 	
 	// Update is called once per frame
 	void Update () 
@@ -91,6 +102,7 @@ public class EnemiesGenerator : MonoBehaviour {
 			EnemyBehaviour eb = spawnedEnemy.GetComponent<EnemyBehaviour>();
 			eb.targetObject = monster;
 			eb.attackDistance = GetAttackDistance(spawnedEnemy);
+			eb.fallHeight = fallHeight;
 
 			spawned.Add(eb);
 		}
