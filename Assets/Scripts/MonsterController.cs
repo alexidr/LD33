@@ -35,6 +35,8 @@ public class MonsterController : MonoBehaviour
 	public GameObject gun;
 	public float scrollSpeed;
 
+	public GameObject laserEffectPrefab;
+
 	bool moveForward;
 	bool moveBackward;
 	bool wrongInput = false;
@@ -53,6 +55,8 @@ public class MonsterController : MonoBehaviour
 
 	KeyCode expectedKey = KeyCode.None;
 	float expectedTime;
+
+	GameObject laserEffect;
 
 	static MonsterController This;
 
@@ -102,6 +106,9 @@ public class MonsterController : MonoBehaviour
 
 		redGlow.SetActive(false);
 		greenGlow.SetActive(false);
+
+		laserEffect = Instantiate(laserEffectPrefab);
+		laserEffect.SetActive(false);
 	}
 
 	void Move()
@@ -339,6 +346,9 @@ public class MonsterController : MonoBehaviour
 			currentScroll += Time.deltaTime * scrollSpeed;
 			laser.transform.right = dir;
 
+			laserEffect.SetActive(true);
+			laserEffect.transform.position = hitPoint + Vector3.up*0.1f + Vector3.back*0.2f;
+
 			if(needRed)
 			{
 				redGlow.SetActive(true);
@@ -361,7 +371,10 @@ public class MonsterController : MonoBehaviour
 		if(Input.GetMouseButtonUp(0))
 		{
 			if(laser != null)
+			{
 				Destroy(laser);
+				laserEffect.SetActive(false);
+			}
 
 			redGlow.SetActive(false);
 			greenGlow.SetActive(false);
