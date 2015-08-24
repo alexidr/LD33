@@ -4,12 +4,6 @@ using System.Collections.Generic;
 
 public class SoldersBehaviour : EnemyBehaviour 
 {
-	static List<float> distances = new List<float>();
-
-	public float attackDistanceMin;
-	public float attackDistanceMax;
-	float attackDistance;
-
 	public float flipDistance = 5.0f;
 	public float shakeTime = 0.15f;
 	public float shakeMinAngle = 5.0f;
@@ -24,6 +18,7 @@ public class SoldersBehaviour : EnemyBehaviour
 	public Transform firePoint;
 	public GameObject bullet;
 	public float shootFrequency = 1.0f;
+	public bool explodeOnDeath = false;
 
 	bool playingDeath = false;
 	float nextShootTime;
@@ -31,44 +26,12 @@ public class SoldersBehaviour : EnemyBehaviour
 
 	float moveShakeRotationMult = 1.0f;
 	int fireShakeState = 0;
-
-	static void RemoveDistance(float dist)
-	{
-		distances.Remove(dist);
-	}
-	static float PickDistance(float min, float max, float size)
-	{
-		for(int i = 50; i > 0; --i)
-		{
-			float dist = Random.Range(min, max);
-			bool found = true;
-			foreach(float used in distances)
-			{
-				if(dist + size > used && dist - size < used)
-				{
-					found = false;
-					break;
-				}
-			}
-
-			if(found) 
-			{
-				distances.Add(dist);
-				return dist;
-			}
-		}
-
-		Debug.LogError("here");
-		return Random.Range(min, max);
-	}
-
+	
     // Use this for initialization
 	void Start () 
 	{
 		//iTween.RotateTo(gameObject, new iTween. new Vector3(0.0f, 0.0f, 90.0f), 100000.0f);
 		nextShootTime = 0.0f;
-
-		attackDistance = PickDistance(attackDistanceMin, attackDistanceMax, 2.0f);
 	}
 
 	void StopMove()
@@ -137,7 +100,7 @@ public class SoldersBehaviour : EnemyBehaviour
 				if(bullet != null)
 					Instantiate(bullet, firePoint.position, firePoint.rotation);
 				else
-					MonsterController.FindMonster(targetObject).DoDamage(damage);
+					MonsterController.DoDamage(damage);
 			}
 
 			moving = false;
@@ -151,6 +114,8 @@ public class SoldersBehaviour : EnemyBehaviour
 
 	void Death()
 	{
+		Destroy(GetComponent<iTween>());
+
 		float rand = Random.value;
 		if(rand > 0.8f)
 			iTween.RotateTo(gameObject, new Vector3(90.0f, 0.0f, 0.0f), 0.5f);
@@ -167,17 +132,13 @@ public class SoldersBehaviour : EnemyBehaviour
 		if(!playingDeath)
 			Fight();
 	}
-
-	virtual public void OnGettingHit(float damage)
-	{
-		health -= damage*Time.deltaTime;
-	}
-
+	
 	override public void PlayDeath()
 	{
 		playingDeath = true;
 		Death();
 
-		RemoveDistance(attackDistance);
+		if(explodeOnDeath)
+			Destroy(gameObject);
 	}
 }

@@ -3,7 +3,6 @@ using System.Collections;
 
 public class MonsterController : MonoBehaviour 
 {
-	bool doingStep = false;
 	bool doingShake = false;
 
 	public float stepTime;
@@ -11,6 +10,8 @@ public class MonsterController : MonoBehaviour
 	public float eyeMinX;
 	public float eyeMaxX;
 	public float damage;
+
+	public Transform mouth;
 
 	public GameObject redLaserPrefab;
 	public GameObject redGlow;
@@ -20,9 +21,18 @@ public class MonsterController : MonoBehaviour
 	public float scrollSpeed;
 
 	GameObject laser;
+	bool wasRed;
+
 	float laserInitialLength;
 	Vector3 target;
 	float currentScroll;
+
+	static MonsterController This;
+
+	static public Vector3 MouthPosition()
+	{
+		return This.mouth.position;
+	}
 
 	static public MonsterController FindMonster(GameObject inGO)
 	{
@@ -49,14 +59,18 @@ public class MonsterController : MonoBehaviour
 		return health;
 	}
 
-	public void DoDamage(float damage)
+	static public void DoDamage(float damage)
 	{
 
+	}
+	static public void Heal(float heal)
+	{
 	}
 
 	// Use this for initialization
 	void Start () 
 	{
+		This = this;
 		target = transform.position;
 
 		redGlow.SetActive(false);
@@ -114,20 +128,29 @@ public class MonsterController : MonoBehaviour
 	{
 		DoStep();
 
-		Vector3 dir = GetMouseWorld() - transform.position;
+		Vector3 hitTarget = GetMouseWorld();
+		RaycastHit hit;
+		if(Physics.Raycast(new Ray(Camera.main.transform.position, (GetMouseWorld() - Camera.main.transform.position).normalized), out hit))
+		{
+			hitTarget = hit.point;
+		}
+
+
+		Vector3 dir = hitTarget - gun.transform.position;
 		Vector3 eyePos = gun.transform.localPosition;
 		eyePos.x = Mathf.Clamp(dir.x * 0.1f - 0.5f, eyeMinX, eyeMaxX);
 		gun.transform.localPosition = eyePos;
 
-		dir.z = 0.0f;
+//		dir.z = 0.0f;
 		dir.Normalize();
 		if(Input.GetMouseButton(0))
 		{
-			RaycastHit hit;
+			EnemyBehaviour enemyBeh = null;
+
 			Vector3 hitPoint;
 			if(Physics.Raycast(new Ray(gun.transform.position, dir), out hit))
 			{
-				EnemyBehaviour enemyBeh = hit.collider.gameObject.GetComponent<EnemyBehaviour>();
+				enemyBeh = hit.collider.gameObject.GetComponent<EnemyBehaviour>();
 				if(enemyBeh != null)
 				{
 					enemyBeh.OnGettingHit(damage);
@@ -140,13 +163,18 @@ public class MonsterController : MonoBehaviour
 				hitPoint = gun.transform.position + dir * 100.0f;
 			}
 
+			bool needRed = enemyBeh == null || enemyBeh.redLaser;
+			if(laser != null && (wasRed && !needRed) || (!wasRed && needRed))
+				Destroy(laser);
+
 			if(laser == null)
 			{
-				laser = Instantiate(redLaserPrefab);
+				laser = Instantiate(needRed ? redLaserPrefab : greenLaserPrefab);
+				laser.GetComponent<Renderer>().sortingOrder = 1000;
 				laserInitialLength = laser.GetComponent<Renderer>().bounds.extents.x*2.0f;
 			}
 
-			laser.transform.position = gun.transform.position + Vector3.back * 0.1f;
+			laser.transform.position = gun.transform.position + Vector3.back * 0.0f;
 
 			float dist = Vector3.Distance (laser.transform.position, hitPoint);
 			laser.transform.localScale = new Vector3(dist / laserInitialLength, 1.0f, 1.0f);
@@ -155,8 +183,24 @@ public class MonsterController : MonoBehaviour
 			currentScroll += Time.deltaTime * scrollSpeed;
 			laser.transform.right = dir;
 
-			redGlow.SetActive(true);
-			redGlow.transform.GetChild(0).gameObject.SetActive(Random.value > 0.5f);
+			if(needRed)
+			{
+				redGlow.SetActive(true);
+				greenGlow.SetActive(false);
+				redGlow.transform.GetChild(0).gameObject.SetActive(Random.value > 0.5f);
+					
+				redGlow.GetComponent<Renderer>().sortingOrder = 2000;
+			}
+			else
+			{
+				greenGlow.SetActive(true);
+				redGlow.SetActive(false);
+				greenGlow.transform.GetChild(0).gameObject.SetActive(Random.value > 0.5f);
+				
+				greenGlow.GetComponent<Renderer>().sortingOrder = 2000;
+			}
+
+			wasRed = needRed;
 		}
 		if(Input.GetMouseButtonUp(0))
 		{
