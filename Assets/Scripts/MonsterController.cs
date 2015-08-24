@@ -142,7 +142,7 @@ public class MonsterController : MonoBehaviour
 			laserEffect.SetActive(false);
 
 			Destroy(GetComponent<iTween>());
-			iTween.ShakePosition(gameObject, new Vector3(2.0f, 4.0f, 0.5f), 1.5f);
+			iTween.ShakePosition(gameObject, new Vector3(1.0f, 4.0f, 0.5f), 1.5f);
             iTween.MoveTo(gameObject, iTween.Hash("position", transform.position + Vector3.up * 100.0f,
 			                                      "delay", 1.5f,
 			                                      "time", 2.0f));
