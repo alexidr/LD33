@@ -186,6 +186,7 @@ public class MonsterController : MonoBehaviour
 		moveParams["position"] = target;
 		moveParams["oncomplete"]  = "OnStepDone";
 		moveParams["time"] = stepTime;
+	//	moveParams["ease"];
 		iTween.MoveUpdate(gameObject, moveParams);
 
 		moveForward = false;
