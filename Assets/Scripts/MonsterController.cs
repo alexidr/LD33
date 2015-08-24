@@ -51,6 +51,7 @@ public class MonsterController : MonoBehaviour
 
 	public void DoDamage(float damage)
 	{
+
 	}
 
 	// Use this for initialization
