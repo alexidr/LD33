@@ -6,6 +6,7 @@ public class EnemiesGenerator : MonoBehaviour {
 
 	public GameObject monster;
 	public float distanceToDelete = 20.0f;
+	public bool deleteLeft = true;
 	public float groundHeight;
 	public float fallHeight;
 
@@ -88,7 +89,7 @@ public class EnemiesGenerator : MonoBehaviour {
 			nextSpawnTime = Time.time + Random.Range(minSpawnTime, maxSpawnTime);
 
 			GameObject enemy = levelEnemies[Random.Range(0, levelEnemies.Length)];
-			GameObject spawnedEnemy = Instantiate(enemy);
+			GameObject spawnedEnemy = Instantiate(enemy, Vector3.zero, enemy.transform.rotation) as GameObject;
 			Vector3 startPos = monster.transform.position + 
 				Vector3.right * spawnDistance + 
 				Vector3.forward*Random.Range(minZOffset,maxZOffset) +
@@ -116,7 +117,8 @@ public class EnemiesGenerator : MonoBehaviour {
 				continue;
 			}
 
-			if((spawned[i].transform.position.x + distanceToDelete) < monster.transform.position.x)
+			if(((spawned[i].transform.position.x + distanceToDelete) < monster.transform.position.x && deleteLeft) ||
+			   ((spawned[i].transform.position.x - distanceToDelete) > monster.transform.position.x && !deleteLeft))
 			{
 				ReleaseSlot(spawned[i].gameObject);
 				Destroy(spawned[i].gameObject);

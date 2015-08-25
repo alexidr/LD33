@@ -7,14 +7,25 @@ public class CarBehaviour : EnemyBehaviour
 	public float shakeMinAngle = 5.0f;
 	public float shakeMaxAngle = 10.0f;
 
+	public bool moveLeft = true;
+	float yRotation;
+
 	float moveShakeRotationMult = 1.0f;
+	
+	void Start()
+	{
+		ShakeMove();
+		yRotation = transform.rotation.eulerAngles.y;
+    }
 
 	void ShakeMove()
 	{
 		if(dead)
 			return;
 
-		iTween.RotateTo(gameObject, iTween.Hash("z", Random.Range(shakeMinAngle, shakeMaxAngle)*moveShakeRotationMult, "time", shakeTime, 
+		iTween.RotateTo(gameObject, iTween.Hash("z", Random.Range(shakeMinAngle, shakeMaxAngle)*moveShakeRotationMult, 
+		                                        "y", (moveLeft ? 0.0f : 180.0f) + yRotation,
+		                                        "time", shakeTime, 
 		                                        "oncomplete", "ShakeMove"));
 		moveShakeRotationMult = -moveShakeRotationMult;
 	}
@@ -27,12 +38,7 @@ public class CarBehaviour : EnemyBehaviour
 
 	void Move()
 	{
-		transform.position = transform.position + Vector3.left*movingSpeed*Time.deltaTime;
-	}
-
-	void Start()
-	{
-		ShakeMove();
+		transform.position = transform.position + (moveLeft ? Vector3.left : Vector3.right) * movingSpeed*Time.deltaTime;
 	}
 
 	void Update () 
@@ -44,6 +50,7 @@ public class CarBehaviour : EnemyBehaviour
 	override public void PlayDeath()
 	{
 		dead = true;
+		MonsterController.AddPoints(points);
 
 		Destroy(GetComponent<iTween>());
 		
