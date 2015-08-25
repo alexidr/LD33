@@ -4,8 +4,6 @@ using UnityEngine.UI;
 
 public class MonsterController : MonoBehaviour 
 {
-	bool doingShake = false;
-
 	public float health = 500.0f;
 	float currentHealth;
 
@@ -47,6 +45,8 @@ public class MonsterController : MonoBehaviour
 	public Text pointsText;
 
 	public int points = 0;
+
+	public AudioClip [] fireClips;
 
 	float initialHealthLength;
 
@@ -119,6 +119,13 @@ public class MonsterController : MonoBehaviour
 				go.gameObject.BroadcastMessage(fun, SendMessageOptions.DontRequireReceiver);
             }
         }
+    }
+
+	static IEnumerator PlayFireSounds(float waitTime, MonsterController mc)
+	{
+		yield return new WaitForSeconds(waitTime);
+		mc.GetComponent<AudioSource>().clip = mc.fireClips[Random.Range(0, mc.fireClips.Length)];
+		mc.GetComponent<AudioSource>().Play();
     }
 
 	static IEnumerator ShowFinishUI(float waitTime, MonsterController mc)
@@ -437,6 +444,8 @@ public class MonsterController : MonoBehaviour
 				laser = Instantiate(needRed ? redLaserPrefab : greenLaserPrefab);
 				laser.GetComponent<Renderer>().sortingOrder = 1000;
 				laserInitialLength = laser.GetComponent<Renderer>().bounds.extents.x*2.0f;
+
+				StartCoroutine(PlayFireSounds(Random.Range(0, 0.5f), this));
 			}
 
 			laser.transform.position = gun.transform.position + Vector3.back * 0.0f;
@@ -495,6 +504,6 @@ public class MonsterController : MonoBehaviour
 
 	void OnShakeDone()
 	{
-		doingShake = false;
+		//doingShake = false;
 	}
 }

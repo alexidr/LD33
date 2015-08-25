@@ -22,6 +22,9 @@ public class SoldersBehaviour : EnemyBehaviour
 	public float shootFrequency = 1.0f;
 	public bool explodeOnDeath = false;
 
+	public AudioClip[] fireSounds;
+	public AudioClip[] deathSounds;
+	 
 	bool playingDeath = false;
 	bool finished = false;
 
@@ -106,6 +109,8 @@ public class SoldersBehaviour : EnemyBehaviour
 					Instantiate(bullet, firePoint.position, firePoint.rotation);
 				else
 					MonsterController.DoDamage(damage);
+
+				Sounds.PlaySounds(gameObject, fireSounds);
 			}
 
 			moving = false;
@@ -157,10 +162,9 @@ public class SoldersBehaviour : EnemyBehaviour
 	
 	override public void PlayDeath()
 	{
+		Sounds.PlaySounds(gameObject, deathSounds);
+
 		playingDeath = true;
 		Death();
-
-		//if(explodeOnDeath)
-		//	Destroy(gameObject);
 	}
 }

@@ -23,6 +23,8 @@ public class CowBehaviour : EnemyBehaviour
 	public float eatingTime = 0.2f;
 	public float eatingRotationSpeed = 10.0f;
 
+	public AudioClip [] clips;
+
 	Vector3 initialPos;
 	float hidingTime;
 	State state;
@@ -48,6 +50,9 @@ public class CowBehaviour : EnemyBehaviour
 				iTween.MoveTo(gameObject, targetPos, showUpTime);
 
 				hidingTime = Time.time + waitingTime;
+
+				GetComponent<AudioSource>().clip = clips[Random.Range(0, clips.Length)];
+				GetComponent<AudioSource>().Play();
 			}
 		}
 		if(state == State.ShowingUp && Time.time > hidingTime)

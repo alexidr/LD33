@@ -7,16 +7,28 @@ public class CarBehaviour : EnemyBehaviour
 	public float shakeMinAngle = 5.0f;
 	public float shakeMaxAngle = 10.0f;
 
+	public AudioClip[] movingSounds;
+	public float movingSoundsDelay = 0.5f;
+	public AudioClip[] deathSounds;
+
 	public bool moveLeft = true;
 	float yRotation;
 
 	float moveShakeRotationMult = 1.0f;
-	
+
+	static IEnumerator PlaySounds(float waitTime, CarBehaviour mc)
+	{
+		yield return new WaitForSeconds(waitTime);
+		Sounds.PlaySounds(mc.gameObject, mc.movingSounds);
+	}
+
 	void Start()
 	{
 		ShakeMove();
 		yRotation = transform.rotation.eulerAngles.y;
-    }
+
+		StartCoroutine(PlaySounds(movingSoundsDelay, this));
+	}
 
 	void ShakeMove()
 	{
@@ -63,5 +75,7 @@ public class CarBehaviour : EnemyBehaviour
 			iTween.RotateTo(gameObject, new Vector3(90.0f, gameObject.transform.rotation.eulerAngles.y, 0.0f), 0.3f);
 		else
 			iTween.RotateTo(gameObject, new Vector3(-90.0f, gameObject.transform.rotation.eulerAngles.y, 0.0f), 0.3f);
+
+		Sounds.PlaySounds(gameObject, deathSounds);
     }
 }
