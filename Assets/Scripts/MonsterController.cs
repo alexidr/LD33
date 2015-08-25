@@ -73,6 +73,9 @@ public class MonsterController : MonoBehaviour
 	GameObject greenLaserEffect;
 	bool dead = false;
 
+	float nextFireSoundsTime;
+	bool nextShortSoundsTime = true;
+
 	static MonsterController This;
 
 	static public Vector3 MouthPosition()
@@ -121,11 +124,13 @@ public class MonsterController : MonoBehaviour
         }
     }
 
-	static IEnumerator PlayFireSounds(float waitTime, MonsterController mc)
+	void PlayFireSounds()
 	{
-		yield return new WaitForSeconds(waitTime);
-		mc.GetComponent<AudioSource>().clip = mc.fireClips[Random.Range(0, mc.fireClips.Length)];
-		mc.GetComponent<AudioSource>().Play();
+		GetComponent<AudioSource>().clip = fireClips[Random.Range(0, fireClips.Length)];
+		GetComponent<AudioSource>().Play();
+
+		nextFireSoundsTime = Time.time + (nextShortSoundsTime ? Random.Range(0.3f, 0.7f) : Random.Range(1.0f, 2.0f));
+		nextShortSoundsTime = Random.value > 0.5f;
     }
 
 	static IEnumerator ShowFinishUI(float waitTime, MonsterController mc)
@@ -444,8 +449,6 @@ public class MonsterController : MonoBehaviour
 				laser = Instantiate(needRed ? redLaserPrefab : greenLaserPrefab);
 				laser.GetComponent<Renderer>().sortingOrder = 1000;
 				laserInitialLength = laser.GetComponent<Renderer>().bounds.extents.x*2.0f;
-
-				StartCoroutine(PlayFireSounds(Random.Range(0, 0.5f), this));
 			}
 
 			laser.transform.position = gun.transform.position + Vector3.back * 0.0f;
@@ -483,6 +486,9 @@ public class MonsterController : MonoBehaviour
 			}
 
 			wasRed = needRed;
+
+			if(Time.time > nextFireSoundsTime)
+				PlayFireSounds();
 		}
 		if(Input.GetMouseButtonUp(0))
 		{
