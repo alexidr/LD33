@@ -129,8 +129,8 @@ public class MonsterController : MonoBehaviour
 		GetComponent<AudioSource>().clip = fireClips[Random.Range(0, fireClips.Length)];
 		GetComponent<AudioSource>().Play();
 
-		nextFireSoundsTime = Time.time + (nextShortSoundsTime ? Random.Range(0.3f, 0.7f) : Random.Range(1.0f, 2.0f));
-		nextShortSoundsTime = Random.value > 0.5f;
+		nextFireSoundsTime = Time.time + (nextShortSoundsTime ? Random.Range(0.5f, 1.0f) : Random.Range(1.0f, 2.0f));
+		nextShortSoundsTime = Random.value > 0.4f;
     }
 
 	static IEnumerator ShowFinishUI(float waitTime, MonsterController mc)
@@ -185,6 +185,8 @@ public class MonsterController : MonoBehaviour
 	{
 		This.points += points;
 		This.UpdateUI();
+
+		iTween.ShakeScale(This.pointsText.gameObject, new Vector3(0.75f, 0.75f, 0.0f), 0.3f);
 	}
 
 	public void HealImpl(float heal)
